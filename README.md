@@ -1,17 +1,30 @@
 # Suo DB
 
+
+
 Suo (suomi: swamp) is document oriented DB.
+
+[TOC]
 
 ## Status
 
-This package in heavly development process.
-Currently you can plug this dependency via git link in pubspec.
+**!!! Important! The package currently in heavly development process.**
 
-- [] tested;
-- [] well documented;
-- [] published;
+It means that api may be changes, and currenty not tested well.
 
-## Description
+Please keep it in mind.
+
+## MonoRepo
+
+There is a root repo that contains a two main repos inside:
+
+- `suo` - this library
+- `suo_generator` - generator helper for declarative style DTOs
+- `simple_example` - example usage of thge lib
+
+## Main concept
+
+### Description
 
 It's platform agnostic DB is developing with dart language.
 
@@ -47,7 +60,31 @@ where `link_n` is pointer (id) on exact document;
 `Index<V,I>` is functional-based index. that keep two field inside `name` and `indexFunction`.
 `IndexEntity<V,I>` is wrapper around your primary DTO, that consist `value` list of `indicies` and computable field `id` its field something like primary key. as is a computable it could be composed key. but in generarall it have to be id of your DTO.
 
-### DocStorage Usage
+## Instalation
+
+Since it has not been published yet you should add it as git dependency in your `pubspec.yaml`
+
+```yaml
+dependencies:
+  suo:
+    git:
+      url: git@github.com:NiKoTron/suo.git
+      path: suo
+```
+
+If you whant to use code generation feature you should also add a `suo_generator` in your dev_dependencies
+
+```yaml
+dev_dependencies:
+  suo:
+    git:
+      url: git@github.com:NiKoTron/suo.git
+      path: suo_generator
+```
+
+## Usage
+
+Basic usage looks like this:
 
 First of all we should create indexed wrapper for our DTO object.
 
@@ -58,7 +95,6 @@ class SomeObj {
     String foo;
     String bar;
     String baz;
-
 
     SomeObj.fromJson(String json) // create instance from json
     toJson() => // convert to json...
@@ -83,22 +119,13 @@ For each type of object, we have to create their own docstorage with a unique di
 We should pass four parameters to create storage instance:
 
 The directory where data files will managing.
-Deserialiser and serialiser like in `DirStorage` above.
+Deserialiser and serialiser like in `Suo` above.
 Indexed factory is a function that makes an `IndexedEntity` wrapper instance for our DTO.
-
-## MonoRepo
-
-This is a root repo that contains a two main repos inside:
-
-- `suo` db implementation
-- `suo_generator` - generator helper for declarative style DTOs
 
 ## License
 
-Developing under MIT license
-
-## Instalation
-
-## Usage
+This package is dveloping under MIT license
 
 ## Credits
+
+Main contributor: Nikolai Simonov <nickolay.simonov@outlook.com>

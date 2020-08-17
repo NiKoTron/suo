@@ -1,10 +1,15 @@
+/// Represents named computable index
 class Index<V, I> {
+  /// Name of index
   final String name;
+
+  /// The function acording to which one index will compute
   final I Function(V) indexFunction;
 
   const Index(this.name, this.indexFunction);
 }
 
+/// Wrapper for entity with indexng possibility
 class IndexedEntity<V, I> {
   final V value;
   final I Function(V) _idFunction;

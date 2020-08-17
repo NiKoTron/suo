@@ -1,6 +1,7 @@
 import 'core/document.dart';
 import 'doc_storage.dart';
 
+/// The main class for woring with suo.
 class Suo {
   static final _instances = <String, Suo>{};
 
@@ -8,6 +9,8 @@ class Suo {
 
   Suo._(this._basePath);
 
+  /// Creates a storage by following path and returns instance
+  /// if storage already exists by this path returns instance
   factory Suo.create(String basePath) {
     if (!_instances.containsKey(basePath)) {
       _instances[basePath] = Suo._(basePath);
@@ -17,6 +20,9 @@ class Suo {
 
   final _storages = <String, DocStorage>{};
 
+  /// Register document type into suo storage
+  /// It means that suo will be know which sereialiser use to store
+  /// and which indeicies should be calculated for entities
   void register<D>(SuoDocumetMixin<D> doc) {
     final typeS = D.toString().toLowerCase();
     if (!_storages.containsKey(typeS)) {
@@ -34,11 +40,14 @@ class Suo {
     return _storages[key];
   }
 
+  /// Saves document into storage
   void save<D>(D document) {
     final storage = _getStorage(D.toString().toLowerCase());
     storage?.save(document);
   }
 
+  /// Find and takes a document by primary id
+  /// if document not founded returns `null`
   D getById<D>(String id) {
     final storage = _getStorage(D.toString().toLowerCase());
     if (storage != null) {
@@ -47,6 +56,8 @@ class Suo {
     return null;
   }
 
+  /// Returns list of objects with type passed in generic
+  /// can limits count of returning objects by passing `limit` arg.
   List<D> getBy<D>({int limit}) {
     final key = D.toString().toLowerCase();
     if (_storages.containsKey(key)) {

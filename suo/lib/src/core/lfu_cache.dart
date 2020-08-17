@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+/// LFU Cache implementation
 class LFUCache<K, V> {
   int capacity;
 
