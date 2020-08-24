@@ -76,7 +76,7 @@ class DirStorage {
     switch (event.type) {
       case watcher.ChangeType.MODIFY:
         final file = File(event.path);
-        final value = _deSerialisers[hashedKey](file.readAsStringSync());
+        final value = _deSerialisers[hashedKey](file.readAsBytesSync());
         _sync(hashedKey, value);
         break;
       case watcher.ChangeType.REMOVE:
@@ -118,7 +118,7 @@ class DirStorage {
       return null;
     }
     final deserialiser = _deSerialisers[hk];
-    final value = deserialiser(f.readAsStringSync());
+    final value = deserialiser(f.readAsBytesSync());
     _sync(hk, value);
     return value as T;
     // }

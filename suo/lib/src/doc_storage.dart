@@ -1,5 +1,8 @@
 import 'dart:collection';
+import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:meta/meta.dart';
 
 import 'package:path/path.dart';
@@ -73,8 +76,9 @@ class DocStorage<D> {
 
   Map<String, Set<String>> loadIndexFile(File f) {
     final map = <String, Set<String>>{};
+
     f.readAsLinesSync().forEach((ln) {
-      final line = _decrypt(ln);
+      final line = utf8.decode(_decrypt(utf8.encode(ln)));
       final vls = line.split(':');
       assert(vls.length == 2);
       final valueHash = vls[0].trim();
@@ -88,11 +92,11 @@ class DocStorage<D> {
     _indices.forEach((key, value) {
       final f = File('${_iDir.path}/$key.idx');
 
-      final sb = StringBuffer();
-      value
-          .forEach((vh, lSet) => sb.writeln(_encrypt('$vh:${lSet.join(",")}')));
+      final bytes = <int>[];
+      value.forEach((vh, lSet) =>
+          bytes.addAll(_encrypt(utf8.encode('$vh:${lSet.join(",")}'))));
 
-      f.writeAsStringSync(sb.toString());
+      f.writeAsBytesSync(bytes);
     });
   }
 
@@ -105,7 +109,7 @@ class DocStorage<D> {
 
     final f = File('${_dir.path}/${entity.id}.dbe');
 
-    f.writeAsStringSync(_encrypt(_serialiser(entity.value)));
+    f.writeAsBytesSync(_encrypt(_serialiser(entity.value)));
 
     _rebuildDbeLinks();
     _dumpIndecies();
@@ -118,6 +122,7 @@ class DocStorage<D> {
           _indices[e.key] = {};
         }
         if (!_indices[e.key].containsKey(e.value)) {
+          // ignore: prefer_collection_literals
           _indices[e.key][e.value] = LinkedHashSet.of([entity.id]);
         } else if (!_indices[e.key][e.value].contains(entity.id)) {
           _indices[e.key][e.value].add(entity.id);
@@ -127,7 +132,7 @@ class DocStorage<D> {
   }
 
   IndexedEntity<D, String> _readFromFile(File f) =>
-      _indexedFactory(_deSerialiser(_decrypt(f.readAsStringSync())));
+      _indexedFactory(_deSerialiser(_decrypt(f.readAsBytesSync())));
 
   D getById(String id) {
     if (_cache.values.containsKey(id)) {
@@ -198,7 +203,7 @@ class DocStorage<D> {
     _dumpIndecies();
   }
 
-  String _decrypt(String input) {
+  Uint8List _decrypt(Uint8List input) {
     try {
       return _cipher.decrypt(input);
     } catch (e, s) {
@@ -207,7 +212,7 @@ class DocStorage<D> {
     }
   }
 
-  String _encrypt(String input) {
+  Uint8List _encrypt(Uint8List input) {
     try {
       return _cipher.encrypt(input);
     } catch (e, s) {
@@ -221,8 +226,8 @@ class _BypassCipher implements Cipher {
   const _BypassCipher();
 
   @override
-  String decrypt(String data) => data;
+  Uint8List decrypt(Uint8List data) => data;
 
   @override
-  String encrypt(String data) => data;
+  Uint8List encrypt(Uint8List data) => data;
 }
