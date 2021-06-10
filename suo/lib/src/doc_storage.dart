@@ -27,10 +27,7 @@ class DocStorage<D> {
       required Serialise<D?> seriaiser,
       required IndexedFactory<D?> indexedFactory,
       Cipher cipher = const _BypassCipher()})
-      : assert(dirPath != null && dirPath.isNotEmpty),
-        assert(deSerialiser != null),
-        assert(seriaiser != null),
-        assert(indexedFactory != null),
+      : assert(dirPath.isNotEmpty),
         _dir = Directory(dirPath),
         _deSerialiser = deSerialiser,
         _serialiser = seriaiser,
@@ -192,7 +189,7 @@ class DocStorage<D> {
       });
     }
 
-    final f = File('${_dir.path}/${index}.dbe');
+    final f = File('${_dir.path}/$index.dbe');
     if (f.existsSync()) {
       f.deleteSync(recursive: true);
     }
