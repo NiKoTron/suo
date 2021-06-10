@@ -1,6 +1,6 @@
 # Suo DB
 
-
+![black metal cover](assets/cover.jpg)
 
 Suo (suomi: swamp) is document oriented DB.
 
@@ -8,9 +8,9 @@ Suo (suomi: swamp) is document oriented DB.
 
 ## Status
 
-**!!! Important! The package currently in heavly development process.**
+**!!! Important! Despite it's already using in production on some projects, it still in heavly development stage.**
 
-It means that api may be changes, and currenty not tested well.
+It means that API may changes, and currenty not tested as well as should.
 
 Please keep it in mind.
 
