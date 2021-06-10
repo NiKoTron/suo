@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:suo/suo.dart';
 
-@IdxDocument()
+@idxDocument
 class Bike {
-  @IdxID()
+  @idxID
   final String serialNo;
   final String brand;
   @IdxIndex(name: 'modelColor')

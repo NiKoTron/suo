@@ -1,6 +1,8 @@
+import 'dart:typed_data';
+
 abstract class Cipher {
-  String encrypt(String data);
-  String decrypt(String data);
+  Uint8List encrypt(Uint8List data);
+  Uint8List decrypt(Uint8List data);
 }
 
 class CipherException implements Exception {

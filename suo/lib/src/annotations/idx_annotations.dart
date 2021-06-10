@@ -1,4 +1,5 @@
-import 'package:meta/meta.dart';
+const idxID = IdxID();
+const idxDocument = IdxDocument();
 
 class IdxDocument {
   const IdxDocument();
@@ -10,5 +11,5 @@ class IdxID {
 
 class IdxIndex {
   final String name;
-  const IdxIndex({@required this.name}) : assert(name != null);
+  const IdxIndex({required this.name});
 }

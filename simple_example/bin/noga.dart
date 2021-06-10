@@ -1,14 +1,14 @@
 import 'package:suo/suo.dart';
 
-@IdxDocument()
+@idxDocument
 class Noga {
-  @IdxID()
+  @idxID
   @IdxIndex(name: 'aida')
   final String logos;
   @IdxIndex(name: 'aida')
   final String bogos;
 
-  @IdxID()
+  @idxID
   final String nogos;
 
   @IdxIndex(name: 'fora')

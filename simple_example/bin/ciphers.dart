@@ -1,19 +1,20 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:suo/suo.dart';
 
 class B64Cipher implements Cipher {
   @override
-  String decrypt(String data) => utf8.decode(base64.decode(data));
+  Uint8List decrypt(Uint8List data) => base64.decode(utf8.decode(data));
 
   @override
-  String encrypt(String data) => base64.encode(utf8.encode(data));
+  Uint8List encrypt(Uint8List data) => utf8.encode(base64.encode(data));
 }
 
 class ReverseCipher implements Cipher {
   @override
-  String decrypt(String data) => data.split('').reversed.join();
+  Uint8List decrypt(Uint8List data) => data.reversed;
 
   @override
-  String encrypt(String data) => data.split('').reversed.join();
+  Uint8List encrypt(Uint8List data) => data.reversed;
 }

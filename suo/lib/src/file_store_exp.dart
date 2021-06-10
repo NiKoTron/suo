@@ -19,8 +19,8 @@ class DirStorage {
 
   final Map<String, StreamController<StorageEvent>> _listeners = {};
 
-  final Map<String, Deserialise> _deSerialisers = {};
-  final Map<String, Function> _serialisers = {};
+  final Map<String, Deserialise?> _deSerialisers = {};
+  final Map<String, Function?> _serialisers = {};
 
   DirStorage(String dirPath) : _dir = Directory(dirPath) {
     if (!_dir.existsSync()) {
@@ -35,10 +35,10 @@ class DirStorage {
 
   Stream<T> keyChangingStream<T>(String key) {
     final kh = _keyHash(key);
-    if (!_listeners.containsKey(kh) || _listeners[kh].isClosed) {
+    if (!_listeners.containsKey(kh) || _listeners[kh]!.isClosed) {
       _listeners[kh] = StreamController<StorageEvent<T>>.broadcast();
     }
-    return _listeners[kh].stream.asBroadcastStream() as Stream<T>;
+    return _listeners[kh]!.stream.asBroadcastStream() as Stream<T>;
   }
 
   String _keyHash(String key) =>
@@ -49,7 +49,7 @@ class DirStorage {
       if (value == null) {
         _cache.remove(keyHash);
         if (_listeners.containsKey(keyHash)) {
-          _listeners[keyHash].add(StorageEvent.removed());
+          _listeners[keyHash]!.add(StorageEvent.removed());
         }
         return;
       }
@@ -67,7 +67,7 @@ class DirStorage {
         _deSerialisers.containsKey(keyHash)) {
       _cache[keyHash] = value;
       final e = StorageEvent.changed(_cache[keyHash]);
-      _listeners[keyHash].sink.add(e);
+      _listeners[keyHash]!.sink.add(e);
     }
   }
 
@@ -76,7 +76,7 @@ class DirStorage {
     switch (event.type) {
       case watcher.ChangeType.MODIFY:
         final file = File(event.path);
-        final value = _deSerialisers[hashedKey](file.readAsStringSync());
+        final value = _deSerialisers[hashedKey]!(file.readAsBytesSync());
         _sync(hashedKey, value);
         break;
       case watcher.ChangeType.REMOVE:
@@ -86,7 +86,7 @@ class DirStorage {
   }
 
   void registerSerialisers<T>(String key,
-      {Deserialise<T> deserialiser, Serialise<T> serialiser}) {
+      {Deserialise<T>? deserialiser, Serialise<T>? serialiser}) {
     final hashKey = _keyHash(key);
     _deSerialisers[hashKey] = deserialiser;
     _serialisers[hashKey] = serialiser;
@@ -101,13 +101,13 @@ class DirStorage {
     if (!f.existsSync()) {
       f.createSync(recursive: true);
     }
-    final serialiser = _serialisers[hk];
+    final serialiser = _serialisers[hk]!;
     final str = serialiser(value);
     f.writeAsStringSync(str);
     _sync(hk, value);
   }
 
-  T getKey<T>(String key) {
+  T? getKey<T>(String key) {
     final hk = _keyHash(key);
     assert(_deSerialisers.containsKey(hk));
 
@@ -117,10 +117,10 @@ class DirStorage {
     if (!f.existsSync()) {
       return null;
     }
-    final deserialiser = _deSerialisers[hk];
-    final value = deserialiser(f.readAsStringSync());
+    final deserialiser = _deSerialisers[hk]!;
+    final value = deserialiser(f.readAsBytesSync());
     _sync(hk, value);
-    return value as T;
+    return value as T?;
     // }
     // return _cache[hk] as T;
   }
