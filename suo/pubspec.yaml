@@ -1,19 +1,14 @@
 name: suo
 description: suo library for store documents in your swamp
-version: 0.0.2+1
+version: 0.1.0
 
 environment:
-  sdk: '>=2.8.1 <3.0.0'
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  path: ^1.7.0
+  path: ^1.8.0
 
-dependency_overrides:
-  analyzer: '0.39.14'
-  
 dev_dependencies:
-  #path: ^1.7.0
-  #analyzer: ^0.40.0
-  watcher: 0.9.7+15
-  pedantic: ^1.9.2
-  test: ^1.15.3
+  watcher: 1.0.0
+  pedantic: ^1.11.0
+  test: ^1.17.7

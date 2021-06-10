@@ -1,21 +1,17 @@
 name: simple_example
 description: A sample usage of suo and suo_generator packages.
 
-
 environment:
-  sdk: '>=2.8.1 <3.0.0'
+  sdk: ">=2.8.1 <3.0.0"
 
 dependencies:
-  path: ^1.7.0
-  suo: 
+  path: ^1.8.0
+  suo:
     path: ../suo
 
-dependency_overrides:
-  analyzer: '0.39.14'
-
 dev_dependencies:
-  pedantic: ^1.9.2
-  build_runner: 
-  build_verify: 
+  pedantic:
+  build_runner:
+  build_verify:
   suo_generator:
     path: ../suo_generator

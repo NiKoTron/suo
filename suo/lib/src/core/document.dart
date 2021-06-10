@@ -1,9 +1,9 @@
 import 'package:suo/src/core/core.dart';
 
 mixin SuoDocumetMixin<T> {
-  Deserialise<T> deserialiser;
-  Serialise<T> serialiser;
-  IndexedFactory<T> indexedFactory;
+  late Deserialise<T> deserialiser;
+  late Serialise<T> serialiser;
+  late IndexedFactory<T> indexedFactory;
 
   IndexedEntity<T, String> indexedEntityOfThis() {
     assert(this is T);

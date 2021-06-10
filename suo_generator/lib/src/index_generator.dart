@@ -22,13 +22,16 @@ class IndexGenerator extends GeneratorForAnnotation<IdxDocument> {
   String _generateSource(Element element) {
     var visitor = IndexVisitor();
     element.visitChildren(visitor);
-
-    return _genIndexedEntityClass('${visitor.className}', visitor.source,
-        visitor.indexId, visitor.indexedFields);
+    return _genIndexedEntityClass(
+      '${visitor.className?.getDisplayString(withNullability: false)}',
+      visitor.source,
+      visitor.indexId,
+      visitor.indexedFields,
+    );
   }
 
-  String _genIndexedEntityClass(String baseName, String baseSource,
-      List<String> ids, Map<String, List<String>> indexedFields) {
+  String _genIndexedEntityClass(String baseName, String? baseSource,
+      List<String> ids, Map<String?, List<String>> indexedFields) {
     final idsExp = ids.map((e) => '\${o?.' + e + '}').toList().join('');
 
     final idcs = literalList(indexedFields.keys
@@ -43,16 +46,20 @@ class IndexGenerator extends GeneratorForAnnotation<IdxDocument> {
                 ..lambda = true
                 ..body = refer('sha256', 'package:crypto/crypto.dart')
                     .property('convert')
-                    .call([
-                  refer('utf8', 'dart:convert').property('encode').call([
-                    literal(
-                      indexedFields[key]
-                          .map((e) => '\${v?.' + e + '}')
-                          .toList()
-                          .join(''),
-                    ),
-                  ])
-                ]).code).closure.property('toString').call([])
+                    .call(
+                  [
+                    refer('utf8', 'dart:convert').property('encode').call(
+                      [
+                        literal(
+                          indexedFields[key]!
+                              .map((e) => '\${v?.' + e + '}')
+                              .toList()
+                              .join(''),
+                        ),
+                      ],
+                    )
+                  ],
+                ).code).closure.property('toString').call([])
             ],
           ),
         )
@@ -89,17 +96,21 @@ class IndexGenerator extends GeneratorForAnnotation<IdxDocument> {
           ]).code)),
       ));
 
-    final emitter = DartEmitter(Allocator(), true, true);
+    final emitter = DartEmitter(
+      allocator: Allocator(),
+      orderDirectives: true,
+      useNullSafetySyntax: true,
+    );
     final library = Library((b) => b.body.add(clazz));
     return _dartfmt.format('${library.accept(emitter)}');
   }
 }
 
 class IndexVisitor extends SimpleElementVisitor {
-  DartType className;
-  String get source => className?.element?.librarySource?.shortName;
+  DartType? className;
+  String? get source => className?.element?.librarySource?.shortName;
 
-  Map<String, List<String>> indexedFields = {};
+  Map<String?, List<String>> indexedFields = {};
   List<String> indexId = [];
 
   @override
@@ -109,20 +120,22 @@ class IndexVisitor extends SimpleElementVisitor {
 
   @override
   void visitFieldElement(FieldElement element) {
-    element.metadata.forEach((el) {
-      final con = el.computeConstantValue();
-      final typeName = con?.type?.toString();
-      if (typeName == 'IdxIndex') {
-        final field = con?.getField('name')?.toStringValue();
-        if (indexedFields.containsKey(field)) {
-          indexedFields[field].add(element.name);
-        } else {
-          indexedFields[field] = [element.name];
+    element.metadata.forEach(
+      (el) {
+        final con = el.computeConstantValue();
+        final typeName = con?.type?.toString();
+        if (typeName == 'IdxIndex') {
+          final field = con?.getField('name')?.toStringValue();
+          if (indexedFields.containsKey(field)) {
+            indexedFields[field]!.add(element.name);
+          } else {
+            indexedFields[field] = [element.name];
+          }
         }
-      }
-      if (typeName == 'IdxID') {
-        indexId.add(element.name);
-      }
-    });
+        if (typeName == 'IdxID') {
+          indexId.add(element.name);
+        }
+      },
+    );
   }
 }

@@ -16,10 +16,10 @@ class IndexedEntity<V, I> {
 
   I get id => _idFunction(value);
 
-  final List<Index<V, I>> _indices;
+  final List<Index<V, I>>? _indices;
 
   Map<String, I> get indices =>
-      {for (var e in _indices) e.name: e.indexFunction(value)};
+      {for (var e in _indices!) e.name: e.indexFunction(value)};
 
   const IndexedEntity(this.value, this._idFunction, [this._indices]);
 

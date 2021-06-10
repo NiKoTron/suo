@@ -6,11 +6,13 @@ import 'bike.dart';
 import 'bike.idx.dart';
 import 'ciphers.dart';
 
-final docStorage = DocStorage<Bike>('./bike_storage',
-    deSerialiser: (d) => Bike.fromJson(utf8.decode(d)),
-    seriaiser: (b) => utf8.encode(b.toJson()),
-    cipher: B64Cipher(),
-    indexedFactory: (b) => IndexedBike(b));
+final docStorage = DocStorage<Bike>(
+  './bike_storage',
+  deSerialiser: (d) => Bike.fromJson(utf8.decode(d)),
+  seriaiser: (b) => utf8.encode(b.toJson()),
+  cipher: B64Cipher(),
+  indexedFactory: (b) => IndexedBike(b),
+);
 
 void main() {
   playWithDocStorage();

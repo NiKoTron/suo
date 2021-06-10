@@ -15,7 +15,7 @@ class Suo {
     if (!_instances.containsKey(basePath)) {
       _instances[basePath] = Suo._(basePath);
     }
-    return _instances[basePath];
+    return _instances[basePath]!;
   }
 
   final _storages = <String, DocStorage>{};
@@ -23,7 +23,7 @@ class Suo {
   /// Register document type into suo storage
   /// It means that suo will be know which sereialiser use to store
   /// and which indeicies should be calculated for entities
-  void register<D>(SuoDocumetMixin<D> doc) {
+  void register<D>(SuoDocumetMixin<D?> doc) {
     final typeS = D.toString().toLowerCase();
     if (!_storages.containsKey(typeS)) {
       _storages[typeS] = DocStorage<D>('$_basePath/$typeS',
@@ -33,11 +33,11 @@ class Suo {
     }
   }
 
-  DocStorage<D> _getStorage<D>(String key) {
+  DocStorage<D?>? _getStorage<D>(String key) {
     if (!_storages.containsKey(key)) {
       return null;
     }
-    return _storages[key];
+    return _storages[key] as DocStorage<D?>?;
   }
 
   /// Saves document into storage
@@ -48,7 +48,7 @@ class Suo {
 
   /// Find and takes a document by primary id
   /// if document not founded returns `null`
-  D getById<D>(String id) {
+  D? getById<D>(String id) {
     final storage = _getStorage(D.toString().toLowerCase());
     if (storage != null) {
       return storage.getById(id);
@@ -58,11 +58,11 @@ class Suo {
 
   /// Returns list of objects with type passed in generic
   /// can limits count of returning objects by passing `limit` arg.
-  List<D> getBy<D>({int limit}) {
+  List<D?> getBy<D>({int? limit}) {
     final key = D.toString().toLowerCase();
     if (_storages.containsKey(key)) {
-      final storage = _storages[key];
-      return storage.getAll(limit);
+      final storage = _storages[key]!;
+      return storage.getAll(limit) as List<D?>;
     }
     return [];
   }
