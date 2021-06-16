@@ -9,3 +9,6 @@ build/
 doc/api/
 
 bike_storage/
+
+# Generated index
+*.idx.dart
