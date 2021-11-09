@@ -15,35 +15,35 @@ class Bike {
   @IdxIndex(name: 'modelColor')
   final String color;
   final double wheelSize;
-  Bike({
-    this.serialNo,
-    this.brand,
-    this.model,
-    this.speedCount,
-    this.size,
-    this.color,
-    this.wheelSize,
+
+  const Bike({
+    required this.serialNo,
+    required this.brand,
+    required this.model,
+    required this.speedCount,
+    required this.size,
+    required this.color,
+    required this.wheelSize,
   });
 
   Bike copyWith({
-    String serialNo,
-    String brand,
-    String model,
-    int speedCount,
-    int size,
-    String color,
-    double wheelSize,
-  }) {
-    return Bike(
-      serialNo: serialNo ?? this.serialNo,
-      brand: brand ?? this.brand,
-      model: model ?? this.model,
-      speedCount: speedCount ?? this.speedCount,
-      size: size ?? this.size,
-      color: color ?? this.color,
-      wheelSize: wheelSize ?? this.wheelSize,
-    );
-  }
+    String? serialNo,
+    String? brand,
+    String? model,
+    int? speedCount,
+    int? size,
+    String? color,
+    double? wheelSize,
+  }) =>
+      Bike(
+        serialNo: serialNo ?? this.serialNo,
+        brand: brand ?? this.brand,
+        model: model ?? this.model,
+        speedCount: speedCount ?? this.speedCount,
+        size: size ?? this.size,
+        color: color ?? this.color,
+        wheelSize: wheelSize ?? this.wheelSize,
+      );
 
   Map<String, dynamic> toMap() {
     return {
@@ -57,19 +57,15 @@ class Bike {
     };
   }
 
-  static Bike fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
-    return Bike(
-      serialNo: map['serialNo'],
-      brand: map['brand'],
-      model: map['model'],
-      speedCount: map['speedCount'],
-      size: map['size'],
-      color: map['color'],
-      wheelSize: map['wheelSize'],
-    );
-  }
+  static Bike fromMap(Map<String, dynamic> map) => Bike(
+        serialNo: map['serialNo'],
+        brand: map['brand'],
+        model: map['model'],
+        speedCount: map['speedCount'],
+        size: map['size'],
+        color: map['color'],
+        wheelSize: map['wheelSize'],
+      );
 
   String toJson() => json.encode(toMap());
 

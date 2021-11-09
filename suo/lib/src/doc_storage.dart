@@ -9,9 +9,9 @@ import 'core/core.dart';
 class DocStorage<D> {
   final Directory _dir;
   final Deserialise<D> _deSerialiser;
-  final Serialise<D?> _serialiser;
+  final Serialise<D> _serialiser;
   final Cipher _cipher;
-  final IndexedFactory<D?> _indexedFactory;
+  final IndexedFactory<D> _indexedFactory;
 
   final Map<String, Map<String, Set<String>>> _indices = {};
   final LFUCache<String, D?> _cache = LFUCache(150);
@@ -24,8 +24,8 @@ class DocStorage<D> {
 
   DocStorage(String dirPath,
       {required Deserialise<D> deSerialiser,
-      required Serialise<D?> seriaiser,
-      required IndexedFactory<D?> indexedFactory,
+      required Serialise<D> seriaiser,
+      required IndexedFactory<D> indexedFactory,
       Cipher cipher = const _BypassCipher()})
       : assert(dirPath.isNotEmpty),
         _dir = Directory(dirPath),
@@ -112,22 +112,26 @@ class DocStorage<D> {
 
   void _addToIndecies(IndexedEntity<D?, String> entity) {
     entity.indices.entries.forEach((e) {
-      if (e.value != null) {
-        if (!_indices.containsKey(e.key)) {
-          _indices[e.key] = {};
-        }
-        if (!_indices[e.key]!.containsKey(e.value)) {
-          // ignore: prefer_collection_literals
-          _indices[e.key]![e.value] = LinkedHashSet.of([entity.id]);
-        } else if (!_indices[e.key]![e.value]!.contains(entity.id)) {
-          _indices[e.key]![e.value]!.add(entity.id);
-        }
+      if (!_indices.containsKey(e.key)) {
+        _indices[e.key] = {};
+      }
+      if (!_indices[e.key]!.containsKey(e.value)) {
+        // ignore: prefer_collection_literals
+        _indices[e.key]![e.value] = LinkedHashSet.of([entity.id]);
+      } else if (!_indices[e.key]![e.value]!.contains(entity.id)) {
+        _indices[e.key]![e.value]!.add(entity.id);
       }
     });
   }
 
-  IndexedEntity<D?, String> _readFromFile(File f) =>
-      _indexedFactory(_deSerialiser(_decrypt(f.readAsBytesSync())));
+  IndexedEntity<D, String> _readFromFile(File f) {
+    final bytes = f.readAsBytesSync();
+    final obj = _deSerialiser(_decrypt(bytes));
+    if (obj == null) {
+      throw DeserialiseException('Error during data serialization');
+    }
+    return _indexedFactory(obj);
+  }
 
   D? getById(String id) {
     if (_cache.values.containsKey(id)) {
@@ -199,7 +203,7 @@ class DocStorage<D> {
   Uint8List _decrypt(Uint8List input) {
     try {
       return _cipher.decrypt(input);
-    } catch (e, s) {
+    } catch (e, _) {
       throw CipherException(
           'Unable to decrypt a data. See parent exception for detatils', e);
     }
@@ -208,7 +212,7 @@ class DocStorage<D> {
   Uint8List _encrypt(Uint8List input) {
     try {
       return _cipher.encrypt(input);
-    } catch (e, s) {
+    } catch (e, _) {
       throw CipherException(
           'Unable to encrypt a data. See parent exception for detatils', e);
     }
@@ -223,4 +227,11 @@ class _BypassCipher implements Cipher {
 
   @override
   Uint8List encrypt(Uint8List data) => data;
+}
+
+class DeserialiseException implements Exception {
+  final String message;
+  final dynamic parent;
+
+  const DeserialiseException(this.message, [this.parent]);
 }

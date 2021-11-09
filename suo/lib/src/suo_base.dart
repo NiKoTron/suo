@@ -23,7 +23,7 @@ class Suo {
   /// Register document type into suo storage
   /// It means that suo will be know which sereialiser use to store
   /// and which indeicies should be calculated for entities
-  void register<D>(SuoDocumetMixin<D?> doc) {
+  void register<D>(SuoDocumetMixin<D> doc) {
     final typeS = D.toString().toLowerCase();
     if (!_storages.containsKey(typeS)) {
       _storages[typeS] = DocStorage<D>('$_basePath/$typeS',
